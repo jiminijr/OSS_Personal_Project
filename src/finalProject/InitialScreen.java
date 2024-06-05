@@ -63,7 +63,7 @@ public class InitialScreen extends JPanel {
         textField.setBounds(96, 595, 208, 41);
         add(textField);
         textField.setColumns(20);
-        textField.setFont(new Font("times new roman", Font.ITALIC, 30));
+        textField.setFont(new Font("MonoSpaced", Font.ITALIC, 30));
         textField.setHorizontalAlignment(JTextField.CENTER);
         btnNewButton = new JButton("");
         btnNewButton.addActionListener(new ActionListener() {
