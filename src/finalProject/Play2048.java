@@ -84,6 +84,7 @@ public class Play2048 extends JPanel {
                 label.setOpaque(true);
                 label.setIcon(tile.getImageIcon());
                 label.setHorizontalAlignment(JLabel.CENTER);
+                label.setVerticalAlignment(JLabel.CENTER); // 수직 중앙 정렬 추가
                 label.setText(tile.getValue() == 0 ? "" : Integer.toString(tile.getValue()));
                 label.setForeground(tile.getForeground());
             }
@@ -196,6 +197,8 @@ public class Play2048 extends JPanel {
                         JLabel label = labels[row][col];
                         label.setIcon(tile.getImageIcon());
                         label.setText(tile.getValue() == 0 ? "" : Integer.toString(tile.getValue()));
+                        label.setHorizontalAlignment(JLabel.CENTER);
+                        label.setVerticalAlignment(JLabel.CENTER); // 수직 중앙 정렬 추가
                         label.setForeground(tile.getForeground());
                     }
                 }
@@ -216,6 +219,8 @@ public class Play2048 extends JPanel {
                         JLabel label = labels[row][col];
                         label.setIcon(tile.getImageIcon());
                         label.setText(tile.getValue() == 0 ? "" : Integer.toString(tile.getValue()));
+                        label.setHorizontalAlignment(JLabel.CENTER);
+                        label.setVerticalAlignment(JLabel.CENTER); // 수직 중앙 정렬 추가
                         label.setForeground(tile.getForeground());
                     }
                 }
