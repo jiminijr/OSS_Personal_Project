@@ -122,9 +122,9 @@ java -cp bin finalProject.Main
 # 실행 예시
 
 
-<img src="https://github.com/jiminijr/OSS_Personal_Project/assets/95954633/d7d644ac-4c7f-40fa-8221-bd6dcdd2a96a" width="300" height="500"/>
-<img src="https://github.com/jiminijr/OSS_Personal_Project/assets/95954633/140f5e81-b7f0-4f64-b47e-fca3f18afb9d" width="300" height="500"/>
-<img src="https://github.com/jiminijr/OSS_Personal_Project/assets/95954633/7a9b7fcb-3c35-4500-b910-f51777005bc4" width="300" height="500"/>
+<img src="https://github.com/jiminijr/OSS_Personal_Project/assets/95954633/d7d644ac-4c7f-40fa-8221-bd6dcdd2a96a" width="250" height="400"/>
+<img src="https://github.com/jiminijr/OSS_Personal_Project/assets/95954633/140f5e81-b7f0-4f64-b47e-fca3f18afb9d" width="250" height="400"/>
+<img src="https://github.com/jiminijr/OSS_Personal_Project/assets/95954633/7a9b7fcb-3c35-4500-b910-f51777005bc4" width="250" height="400"/>
 
 # 코드설명
 
