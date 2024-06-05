@@ -3,12 +3,7 @@ package finalProject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-
 import java.util.LinkedList;
-
 
 public class Game {
     public enum Direction {
@@ -16,6 +11,17 @@ public class Game {
         DOWN,
         LEFT,
         RIGHT
+    }
+
+    public interface GameEventListener {
+        void onGameOver();
+        void onTileMerged();
+    }
+
+    private GameEventListener eventListener;
+
+    public void setEventListener(GameEventListener listener) {
+        this.eventListener = listener;
     }
 
     private boolean hasWon = false; // Variable to store whether the player has won
@@ -44,6 +50,9 @@ public class Game {
 
     public void setLost(boolean lost) {
         hasLost = lost;
+        if (lost && eventListener != null) {
+            eventListener.onGameOver();
+        }
     }
 
     public void resetGame() {
@@ -136,8 +145,10 @@ public class Game {
         if (needAddTile) {
             addTile();
         }
-    }
 
+        // Check game state after the move
+        checkGameState();
+    }
 
     private Tile[] moveLine(Tile[] oldLine) {
         // Code for moving a single line of tiles
@@ -160,7 +171,6 @@ public class Game {
         return l.toArray(new Tile[4]);
     }
 
-
     private Tile[] mergeLine(Tile[] oldLine) {
         // Code for merging a single line of tiles
         LinkedList<Tile> list = new LinkedList<>();
@@ -171,6 +181,11 @@ public class Game {
                 score += newValue; // update score
                 int updatedScore = score;
                 onScoreUpdated(updatedScore);
+                if (newValue == 2048) {
+                    if (eventListener != null) {
+                        eventListener.onTileMerged();
+                    }
+                }
                 i++;
             } else {
                 list.add(oldLine[i]);
@@ -206,19 +221,19 @@ public class Game {
                 return false;
             }
         }
-        return true;}
-    
+        return true;
+    }
 
     public Tile[][] getBoard() {
         return gameBoard.getTiles();
     }
-    
+
     public void onScoreUpdated(int score) {
         String playerName = PlayerName.getInstance().getName();
         Player player = new Player(playerName, score);
         Ranking.getInstance().addPlayer(player);
     }
-    
+
     public void checkGameState() {
         for (int i = 0; i < gameBoard.getTiles().length; i++) {
             for (int j = 0; j < gameBoard.getTiles()[0].length; j++) {
@@ -234,9 +249,9 @@ public class Game {
                 Tile t = gameBoard.getTiles()[i][j];
                 // Check all four possible directions
                 if ((i < 3 && t.value == gameBoard.getTiles()[i + 1][j].value)
-                    || ((i > 0) && t.value == gameBoard.getTiles()[i - 1][j].value)
-                    || (j < 3 && t.value == gameBoard.getTiles()[i][j + 1].value)
-                    || ((j > 0) && t.value == gameBoard.getTiles()[i][j - 1].value)) {
+                        || ((i > 0) && t.value == gameBoard.getTiles()[i - 1][j].value)
+                        || (j < 3 && t.value == gameBoard.getTiles()[i][j + 1].value)
+                        || ((j > 0) && t.value == gameBoard.getTiles()[i][j - 1].value)) {
                     return; // If there is a possible move, the game is not over.
                 }
             }
@@ -245,7 +260,4 @@ public class Game {
         // If there are no possible moves, then the game is over.
         setLost(true);
     }
-
 }
-
-
