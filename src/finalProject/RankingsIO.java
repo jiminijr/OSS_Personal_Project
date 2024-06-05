@@ -1,11 +1,8 @@
 package finalProject;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -14,13 +11,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import java.awt.SystemColor;
-import javax.swing.JTextArea;
-
 // Player Class
 class Player implements Serializable {
+    private static final long serialVersionUID = 1L;
     String name;
     int score;
 
@@ -41,13 +34,14 @@ class Player implements Serializable {
 // Ranking Class
 class Ranking {
     private static Ranking instance;
-    List<Player> players;
-    String filename = "ranking.txt";  // file name
-    private int highestScore = 0; 
+    private List<Player> players;
+    private String filename = "ranking.txt";
+    private int highestScore = 0;
 
     private Ranking() {
         this.players = new ArrayList<>();
-        loadPlayers();  // get player from file
+        loadPlayers();
+        updateHighestScoreFromPlayers();
     }
 
     public static Ranking getInstance() {
@@ -61,25 +55,45 @@ class Ranking {
         return highestScore;
     }
 
+    private void updateHighestScoreFromPlayers() {
+        for (Player player : players) {
+            if (player.getScore() > highestScore) {
+                highestScore = player.getScore();
+            }
+        }
+    }
+
     public void updateHighestScore(int score) {
         if (score > highestScore) {
             highestScore = score;
         }
     }
 
-
     public void addPlayer(Player player) {
-        this.players.add(player);
-        savePlayers();  // save player
+        boolean playerExists = false;
+        for (Player p : players) {
+            if (p.getName().equals(player.getName())) {
+                if (player.getScore() > p.getScore()) {
+                    p.score = player.getScore();
+                }
+                playerExists = true;
+                break;
+            }
+        }
+        if (!playerExists) {
+            this.players.add(player);
+        }
+        updateHighestScore(player.getScore());
+        savePlayers();
     }
 
-    public void printRanking(JTextArea textArea) { //print ranking
+    public void printRanking(JTextArea textArea) {
         Collections.sort(players, Comparator.comparingInt(Player::getScore).reversed());
 
         StringBuilder rankingString = new StringBuilder();
         for (int i = 0; i < players.size(); i++) {
             rankingString.append((i + 1))
-            		.append(" ")
+                    .append("  ")
                     .append(players.get(i).getName())
                     .append(" ")
                     .append(players.get(i).getScore())
@@ -88,36 +102,38 @@ class Ranking {
         textArea.setText(rankingString.toString());
     }
 
-    // save players into file
     private void savePlayers() {
-        try {
-            FileOutputStream fos = new FileOutputStream(filename);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
+        try (FileOutputStream fos = new FileOutputStream(filename);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(players);
-            oos.close();
-            fos.close();
+            System.out.println("Players saved to file: " + filename);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
-    //get players from file
-    private void loadPlayers() {
-        try {
-            FileInputStream fis = new FileInputStream(filename);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            players = (ArrayList) ois.readObject();
-            ois.close();
-            fis.close();
+    void loadPlayers() {
+        try (FileInputStream fis = new FileInputStream(filename);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            players = (ArrayList<Player>) ois.readObject();
+            System.out.println("Players loaded from file: " + filename);
         } catch (FileNotFoundException e) {
-            players = new ArrayList<>();  // if the file doesn't exsist, make new one
+            players = new ArrayList<>();
+            System.out.println("File not found, creating new player list.");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initializeRanking() {
+        players = new ArrayList<>();
+        highestScore = 0;
+        try (FileOutputStream fos = new FileOutputStream(filename);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(players);
+            System.out.println("Ranking file initialized: " + filename);
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            return;
-        } catch (ClassNotFoundException c) {
-            System.out.println("Class not found");
-            c.printStackTrace();
-            return;
         }
     }
 }
@@ -125,44 +141,44 @@ class Ranking {
 public class RankingsIO extends JPanel {
     private JTextArea textArea;
     private Ranking ranking = Ranking.getInstance();
-	public RankingsIO(CardLayout cardLayout, JPanel contentPane) {
-		 setBackground(new Color(61, 40, 99));
-	        setBorder(new EmptyBorder(5, 5, 5, 5));
-	        setBounds(100, 100, 500,700);
-	        setLayout(null);
-	      
 
-	        
-	        JButton btnNewButton = new JButton("New button");
-	        btnNewButton.setIcon(new ImageIcon(RankingsIO.class.getResource("/finalProject/images/Rankings2.png")));
-	        btnNewButton.setBounds(58, 32, 422, 114);
-	        add(btnNewButton);
-	          btnNewButton.setOpaque(false);
-	          btnNewButton.setBorderPainted(false);
-	          btnNewButton.setFocusPainted(false);
-	          
-	          JButton btnNewButton_1 = new JButton("New button");
-	          btnNewButton_1.setIcon(new ImageIcon(RankingsIO.class.getResource("/finalProject/images/BackToMenu.png")));
-	          btnNewButton_1.setBounds(154, 574, 198, 43);
-	          add(btnNewButton_1);
-	          btnNewButton_1.setOpaque(false);
-	          btnNewButton_1.setBorderPainted(false);
-	          btnNewButton_1.setFocusPainted(false);
-	          
-	          this.textArea = new JTextArea();
-	          textArea.setEditable(false);
-	          textArea.setBounds(88, 194, 310, 338);  
-	          add(textArea);
+    public RankingsIO(CardLayout cardLayout, JPanel contentPane) {
+    	setBackground(new Color(61, 40, 99));
+        setBorder(new EmptyBorder(5, 5, 5, 5));
+        setBounds(100, 100, 500, 700);
+        setLayout(null);
 
-				 btnNewButton_1.addActionListener(new ActionListener() {
-			            public void actionPerformed(ActionEvent e) {
-			                cardLayout.show(contentPane, "menu");
-			            }
-			        });
+        JButton btnNewButton = new JButton();
+        btnNewButton.setIcon(new ImageIcon(RankingsIO.class.getResource("/finalProject/images/Rankings2.png")));
+        btnNewButton.setBounds(58, 32, 422, 114);
+        add(btnNewButton);
+        btnNewButton.setOpaque(false);
+        btnNewButton.setBorderPainted(false);
+        btnNewButton.setFocusPainted(false);
 
-			        // Print ranking when panel is created
-			        ranking.printRanking(textArea);
-			    }
-			}
+        JButton btnBackToMenu = new JButton();
+        btnBackToMenu.setIcon(new ImageIcon(RankingsIO.class.getResource("/finalProject/images/BackToMenu.png")));
+        btnBackToMenu.setBounds(154, 574, 198, 43);
+        add(btnBackToMenu);
+        btnBackToMenu.setOpaque(false);
+        btnBackToMenu.setBorderPainted(false);
+        btnBackToMenu.setFocusPainted(false);
 
-	
+        this.textArea = new JTextArea();
+        textArea.setEditable(false);
+        textArea.setBounds(88, 194, 310, 338);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 24));
+
+        textArea.setForeground(Color.WHITE);
+        textArea.setBackground(new Color(61, 40, 99));
+        add(textArea);
+
+        btnBackToMenu.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(contentPane, "menu");
+            }
+        });
+
+        ranking.printRanking(textArea);
+    }
+}
