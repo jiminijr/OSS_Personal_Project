@@ -106,7 +106,6 @@ class Ranking {
         try (FileOutputStream fos = new FileOutputStream(filename);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(players);
-            System.out.println("Players saved to file: " + filename);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -116,7 +115,6 @@ class Ranking {
         try (FileInputStream fis = new FileInputStream(filename);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
             players = (ArrayList<Player>) ois.readObject();
-            System.out.println("Players loaded from file: " + filename);
         } catch (FileNotFoundException e) {
             players = new ArrayList<>();
             System.out.println("File not found, creating new player list.");
